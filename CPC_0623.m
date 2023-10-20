@@ -1,81 +1,6 @@
 % code of the CPC model for all Exps
 %%
 %Exp 1
-
-close all
-clear
-
-%initial pramater
-error_d=0;
-w0=1;
-w_lowb=0.15;
-r_ltd=0.1;
-r_ltp=0.018;
-fCS=0.5;
-PCd=0.5;
-PCa=2;
-scale1=0.15;
-scale2=130;
-% pertubation schedule
-rot=[0*ones(10,1); 10*ones(100,1);0*ones(60,1)];
-N=length(rot);
-
-%base functions
-sd=15;
-x=-pi:pi/100:pi;
-u=-pi:pi/100:pi;
-PC=circ_vmpdf(x',u,sd);
-basevec=[cos(u)' sin(u)'];
-
-%learning
-ss_list=[];
-w=u*0+w0;
-cs_PC=u*0;
-for n=1:N-1
-    r=rot(n);
-    if r>0
-        error=0;
-        act_CF=abs(circ_vmpdf(error,u,sd)-error_d)./max(circ_vmpdf(0,u,sd));
-    elseif r<0
-        error=pi;
-        act_CF=abs(circ_vmpdf(error,u,sd)-error_d)./max(circ_vmpdf(0,u,sd));
-    else
-        act_CF=0;
-    end
-    
-    cs_PC=cs_PC+PCa.*act_CF;
-    
-    w=w-r_ltp.*(w-w0)-cs_PC.*r_ltd.*(w-w_lowb).*fCS;
-    cs_PC=cs_PC-PCd.*cs_PC;
-    ss_PC=w-cs_PC*scale1;
-    w_list(n,:)=w;
-    cs_list(n,:)=cs_PC;
-    ss_list(n,:)=ss_PC;
-    DCN=mean(ss_PC'.*basevec);
-    [dtheta, drho]=cart2pol(DCN(1),DCN(2));
-    hand(n)=-drho.*cos(dtheta);
-    
-    
-end
-
-figure; hold on
-% subplot(3,2,1);hold on;
-% bs_circle=ss_list(end,:)'.*basevec;
-% % plot(bs_circle(:,2),bs_circle(:,1),'-k','color',[0.5,0.8,0.7],'linewidth',2);
-% fill(sin(x),cos(x),[0.5 0.5 0.5],'EdgeColor','none','FaceAlpha',0.1);
-% for i=1:length(u)-1
-%     plot(bs_circle(i:i+1,2),bs_circle(i:i+1,1),'-r','color',[0.6+0.4*abs(u(i))/pi,0.9-0.3*abs(u(i))/pi,1-0.15*abs(u(i))/pi],'linewidth',3,'markersize',20);
-% end
-% axis([-2 2 -2 2],'square')
-
-subplot(3,2,1);hold on;
-plot(hand*scale2,'-k');
-axis([0 N -5 25])
-
-%%
-%Exp 2
-%initial pramater
-
 close all
 clear
 
@@ -92,17 +17,15 @@ scale1=0.15;
 scale2=130;
 
 
-rot=[0*ones(10,1); 10*ones(100,1)];
-for i=1:30
-    rot=[rot;0;10];
-end
+rot=[0*ones(10,1); 10*ones(100,1);0*ones(70,1)];
+
 
 N=length(rot);
 
 %base function
 sd=15;
-x=-pi:pi/100:pi;
-u=-pi:pi/100:pi;
+x=-pi:pi/1000:pi;
+u=-pi:pi/1000:pi;
 PC=circ_vmpdf(x',u,sd);
 basevec=[cos(u)' sin(u)'];
 
@@ -167,7 +90,104 @@ plot(-cs_list,'-k','color',[0.9,0.75,0],'linewidth',2,'markersize',6);
 plot(w_list,'-k','color',[0.3,0.5,0.9],'linewidth',2,'markersize',6);
 %hand
 plot(hand*scale2,'-k','color',[0.4,0.6,0.6],'linewidth',2,'markersize',6);
+ axis([0 N -5 25])
 
+%%
+%Exp 2
+%initial pramater
+
+close all
+clear
+
+%initial pramater
+error_d=0;
+w0=1;
+w_lowb=0.15;
+r_ltd=0.1;
+r_ltp=0.018;
+fCS=0.5;
+PCd=0.5;
+PCa=2;
+scale1=0.15;
+scale2=130;
+
+
+rot=[0*ones(10,1); 10*ones(100,1)];
+for i=1:30
+    rot=[rot;0;10];
+end
+
+N=length(rot);
+
+%base function
+sd=15;
+x=-pi:pi/1000:pi;
+u=-pi:pi/1000:pi;
+PC=circ_vmpdf(x',u,sd);
+basevec=[cos(u)' sin(u)'];
+
+
+%learning
+ss_list=[];
+w=u*0+w0;
+cs_PC=u*0;
+for n=1:N-1
+    r=rot(n);
+    if r>0
+        error=0;
+        act_CF=abs(circ_vmpdf(error,u,sd)-error_d)./max(circ_vmpdf(0,u,sd));
+    elseif r<0
+        error=pi;
+        act_CF=abs(circ_vmpdf(error,u,sd)-error_d)./max(circ_vmpdf(0,u,sd));
+    else
+        act_CF=0;
+    end
+    
+    cs_PC=cs_PC+PCa.*act_CF;
+    
+    w=w-r_ltp.*(w-w0)-cs_PC.*r_ltd.*(w-w_lowb).*fCS;
+    cs_PC=cs_PC-PCd.*cs_PC;
+    ss_PC=w-cs_PC*scale1;
+%     w_list(n,:)=w;
+%     cs_list(n,:)=cs_PC;
+    ss_list(n,:)=ss_PC;
+    DCN=mean(ss_PC'.*basevec);
+    [dtheta, drho]=cart2pol(DCN(1),DCN(2));
+    hand(n)=-drho.*cos(dtheta);
+
+    wT=mean(w'.*basevec);
+    [dtheta, drho]=cart2pol(wT(1),wT(2));
+    w_list(n)=-drho.*cos(dtheta)*scale2;
+    csT=mean(cs_PC'.*basevec.*scale1);
+    [dtheta, drho]=cart2pol(csT(1),csT(2));
+    cs_list(n)=-drho.*cos(dtheta)*scale2;
+    
+    
+end
+
+% figure; hold on
+% subplot(3,2,1);hold on;
+% bs_circle=ss_list(end,:)'.*basevec;
+% % plot(bs_circle(:,2),bs_circle(:,1),'-k','color',[0.5,0.8,0.7],'linewidth',2);
+% fill(sin(x),cos(x),[0.5 0.5 0.5],'EdgeColor','none','FaceAlpha',0.1);
+% for i=1:length(u)-1
+%     plot(bs_circle(i:i+1,2),bs_circle(i:i+1,1),'-r','color',[0.6+0.4*abs(u(i))/pi,0.9-0.3*abs(u(i))/pi,1-0.15*abs(u(i))/pi],'linewidth',3,'markersize',20);
+% end
+% axis([-2 2 -2 2],'square')
+% 
+% subplot(3,2,3);hold on;
+% plot(hand*scale2,'-k');
+% 
+
+figure
+subplot(2,2,1);hold on;
+%label
+plot(-cs_list,'-k','color',[0.9,0.75,0],'linewidth',2,'markersize',6);
+%stable
+plot(w_list,'-k','color',[0.3,0.5,0.9],'linewidth',2,'markersize',6);
+%hand
+plot(hand*scale2,'-k','color',[0.4,0.6,0.6],'linewidth',2,'markersize',6);
+axis([0 N -5 25])
 %%
 %Exp 3 Antergrade interference
 %initial pramater
@@ -232,13 +252,15 @@ end
 
 figure; hold on
 
-subplot(3,2,1);hold on;
-plot(hand*scale2,'-k');
-axis([0 N -30 30])
+figure
+subplot(2,2,1);hold on;
+
+plot(hand*scale2,'-k','color',[0.4,0.6,0.6],'linewidth',2,'markersize',6);
+axis([0 N -25 25])
 
 %%
 %Exp 5
-%initial pramater
+%p swutch=0.125
 
 close all
 clear
@@ -260,7 +282,12 @@ yt=0*[tim tim tim tim tim tim tim tim];
 
 rot=[0*ones(10,1); 10*ones(100,1);-10*ones(12,1);0*ones(30,1)];
 
-r=[10 10 10 10 10 10 10 10 -10 -10 -10 -10 -10 -10 -10 -10 ];
+% change here for the switch probablity
+r=[10 10 10 10 10 10 10 10 -10 -10 -10 -10 -10 -10 -10 -10 ];%p switch=0.125
+% r=[10 -10 10 -10 10 -10 10 -10 10 -10 -10 10 10 -10 10 -10 ]; %swich=0.9
+% r=[10 -10 10 -10 10 -10 10 -10]%swich=0.5
+% r=[r(randperm(8)) r(randperm(8))]%swich=0.5
+
 for i=1:20
     rot=[rot; r'];
 end
@@ -312,38 +339,36 @@ end
 
 figure; hold on
 
-%PC in polar
-subplot(2,2,1);hold on;
-bs_circle=ss_list(end,:)'.*basevec;
-% plot(bs_circle(:,2),bs_circle(:,1),'-k','color',[0.5,0.8,0.7],'linewidth',2);
-fill(sin(x),cos(x),[0.5 0.5 0.5],'EdgeColor','none','FaceAlpha',0.1);
-for i=1:length(u)-1
-    plot(bs_circle(i:i+1,2),bs_circle(i:i+1,1),'-r','color',[0.6+0.4*abs(u(i))/pi,0.9-0.3*abs(u(i))/pi,1-0.15*abs(u(i))/pi],'linewidth',3,'markersize',20);
-end
-axis([-2 2 -2 2],'square')
-
-%PC
-subplot(2,2,2);hold on;
-bfs=[ss_list(end,:).*circ_vmpdf(x',u,sd)]';
-for i=1:10:length(u)
-    plot(x,bfs(i,:),'-r','color',[0.6+0.4*abs(u(i))/pi,0.9-0.3*abs(u(i))/pi,1-0.15*abs(u(i))/pi],'linewidth',1.5);
-end
-
-axis([-pi pi 0 2])
-
-
-
-% learning curve
-subplot(2,2,3);hold on;
-plot(hand*scale2,'.k');
-axis([0 N -30 30])
+% %PC in polar
+% subplot(2,2,1);hold on;
+% bs_circle=ss_list(end,:)'.*basevec;
+% % plot(bs_circle(:,2),bs_circle(:,1),'-k','color',[0.5,0.8,0.7],'linewidth',2);
+% fill(sin(x),cos(x),[0.5 0.5 0.5],'EdgeColor','none','FaceAlpha',0.1);
+% for i=1:length(u)-1
+%     plot(bs_circle(i:i+1,2),bs_circle(i:i+1,1),'-r','color',[0.6+0.4*abs(u(i))/pi,0.9-0.3*abs(u(i))/pi,1-0.15*abs(u(i))/pi],'linewidth',3,'markersize',20);
+% end
+% axis([-2 2 -2 2],'square')
+% 
+% %PC
+% subplot(2,2,2);hold on;
+% bfs=[ss_list(end,:).*circ_vmpdf(x',u,sd)]';
+% for i=1:10:length(u)
+%     plot(x,bfs(i,:),'-r','color',[0.6+0.4*abs(u(i))/pi,0.9-0.3*abs(u(i))/pi,1-0.15*abs(u(i))/pi],'linewidth',1.5);
+% end
+% 
+% axis([-pi pi 0 2])
+% 
+% 
+% 
+% % learning curve
+% subplot(2,2,3);hold on;
+% plot(hand*scale2,'.k');
+% axis([0 N -30 30])
 % learning vs relearning
 subplot(2,2,4);hold on;
 plot(hand(end-200:end)*scale2,'-k','color',[0.5,0.8,0.7],'linewidth',2);
 plot(hand(10:110)*scale2,'-k','color',[0.4,0.6,0.6],'linewidth',2);
 axis([0 100 -5 30])
-
-
 
 
 %%
@@ -437,7 +462,7 @@ end
 % plot(hand*scale2,'.k');
 % axis([0 N -30 30])
 
-figure(115)
+figure(114)
 m=0;
 for n=[1 2 3 4 50 51 53 54]
     m=m+1;
@@ -538,6 +563,7 @@ dhand3(dccw)=-dhand3(dccw);
 dhand3=dhand3(200:1000);
 nanmean(dhand3);
 
+%%
 % Exp 5 50% condition
 figure
 subplot(2,3,1);hold on;
