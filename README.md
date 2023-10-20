@@ -10,7 +10,7 @@ This is a MATLAB code that was originally developed using Matlab 2022
 
 Files: 
 CPC_0623.m: The original CPC model 
-Each section simulates the learning curve of one Experiment. And replicate the corresponding main figures in the paper.
+Each section simulates the learning curve of one Experiment and replicates the corresponding main figure in the paper.
 
 ReCPC_0623.m: The original CPC model 
 Simulation of the revised CPC model on Experiment 10. 
