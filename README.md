@@ -7,7 +7,7 @@ Required package:
 
 circstat-matlab: https://github.com/circstat/circstat-matlab/blob/master/circ_vmpdf.m
 
-This is a MATLAB code that was original developed using Matlab 2022
+This is a MATLAB code that was originally developed using Matlab 2022
 
 Files: 
 CPC_0623.m: The original CPC model 
