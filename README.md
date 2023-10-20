@@ -9,10 +9,10 @@ circstat-matlab: https://github.com/circstat/circstat-matlab/blob/master/circ_vm
 This is a MATLAB code that was originally developed using Matlab 2022
 
 Files: 
-CPC_0623.m: The original CPC model 
-Each section simulates the learning curve of one Experiment and replicates the corresponding main figure in the paper.
+CPC_0623.m: 
+The original CPC model. Each section simulates the learning curve of one Experiment and replicates the corresponding main figure in the paper.
 
-ReCPC_0623.m: The original CPC model 
+ReCPC_0623.m: 
 Simulation of the revised CPC model on Experiment 10. 
 
 The expected run time of each code should be <10s. 
