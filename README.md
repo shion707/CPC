@@ -16,4 +16,3 @@ ReCPC_0623.m: The original CPC model
 Simulation of the revised CPC model on Experiment 10. 
 
 The expected run time of each code should be <10s. 
-![image](https://github.com/shion707/CPC/assets/68227343/a9471e0e-50f6-43d8-8075-c6d32ed3461e)
