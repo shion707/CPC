@@ -16,3 +16,5 @@ ReCPC_0623.m:
 Simulation of the revised CPC model on Experiment 10. 
 
 The expected run time of each code should be <10s. 
+
+CPC_data.zip: Data and analytical code of all empirical Exp
